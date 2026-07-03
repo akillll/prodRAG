@@ -54,7 +54,6 @@ Initially support:
 Required capabilities:
 
 * Single-file upload
-* Multiple-file upload
 * File-extension and MIME-type validation
 * Configurable maximum file size
 * Empty-file detection
@@ -620,7 +619,7 @@ Required screens:
 
 ### Documents
 
-* Upload one or more documents
+* Upload a document
 * View processing status
 * View failure reason
 * Retry processing
@@ -675,7 +674,7 @@ Required engineering practices:
 * Timeouts around external services
 * Formatting and linting
 * Static type checking
-* Unit, integration, and end-to-end tests
+* Backend unit, integration, and workflow tests
 * Continuous integration
 * Reproducible local deployment
 * Seed or sample document corpus
@@ -718,7 +717,6 @@ Recommended supporting tools:
 
 * OpenTelemetry for tracing
 * pytest for backend tests
-* Playwright for end-to-end tests
 * GitHub Actions for continuous integration
 
 The exact frameworks may change, but parsing, chunking, embedding, retrieval, reranking, context assembly, generation, and evaluation must remain separate modules with clear interfaces.
@@ -791,7 +789,7 @@ Build:
 * Complete failure handling and cleanup
 * Observability and request tracing
 * Performance and cost measurements
-* End-to-end tests
+* Backend workflow tests
 * Polished UI states
 * Architecture documentation
 * Benchmark report
