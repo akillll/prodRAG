@@ -1,0 +1,66 @@
+[tool.ruff]
+target-version = "py313"
+line-length = 100
+src = ["src", "tests"]
+extend-exclude = ["migrations"]
+
+[tool.ruff.lint]
+select = [
+    "B",
+    "E",
+    "F",
+    "I",
+    "SIM",
+    "UP",
+]
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "api",
+    "chunking",
+    "citations",
+    "context",
+    "conversations",
+    "core",
+    "db",
+    "documents",
+    "embeddings",
+    "evaluation",
+    "generation",
+    "ingestion",
+    "observability",
+    "parsing",
+    "reranking",
+    "retrieval",
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+addopts = [
+    "-ra",
+    "--strict-config",
+    "--strict-markers",
+]
+testpaths = ["tests"]
+pythonpath = ["src"]
+markers = [
+    "unit: isolated tests without external services",
+    "integration: tests that use databases, APIs, or other service boundaries",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
