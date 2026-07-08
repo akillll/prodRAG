@@ -1,1 +1,6 @@
-# Runtime dependencies will be added with the backend features that use them.
+alembic==1.16.2
+fastapi==0.115.14
+psycopg[binary]==3.2.9
+pydantic-settings==2.10.1
+sqlalchemy==2.0.41
+uvicorn[standard]==0.35.0

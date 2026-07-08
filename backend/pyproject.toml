@@ -34,11 +34,6 @@ known-first-party = [
     "retrieval",
 ]
 
-[tool.ruff.format]
-quote-style = "double"
-indent-style = "space"
-line-ending = "auto"
-
 [tool.pytest.ini_options]
 minversion = "8.0"
 addopts = [
