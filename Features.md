@@ -11,13 +11,13 @@ Build a complete, high-quality RAG system that demonstrates strong understanding
 * Evidence-grounded answer generation
 * Deterministic citations
 * Evaluation and experimentation
-* Observability and production-quality engineering
+* Debuggability and practical engineering quality
 
 The application is a focused document knowledge assistant, not an enterprise administration platform.
 
 The key portfolio claim is:
 
-> An observable, evaluation-driven RAG system that makes retrieval decisions inspectable and measures how chunking, hybrid search, and reranking affect answer quality.
+> An evaluation-driven RAG system that makes retrieval decisions inspectable and measures how chunking, hybrid search, and reranking affect answer quality.
 
 ---
 
@@ -69,7 +69,6 @@ Required capabilities:
 Document statuses:
 
 ```text
-QUEUED
 PROCESSING
 READY
 FAILED
@@ -80,9 +79,9 @@ Only `READY` documents are searchable.
 
 ---
 
-## 4. Asynchronous processing pipeline
+## 4. Synchronous processing pipeline
 
-Document processing runs in a background worker:
+Document processing runs synchronously in the first version:
 
 ```text
 Upload
@@ -98,16 +97,16 @@ Upload
 
 Required behavior:
 
-* Background job queue
 * Stage-level status and timings
-* Retry for transient failures
-* Maximum retry count
+* Manual retry for failed processing
 * Clear failure reason
 * Processing-version identifier
 * Idempotent stages
 * Safe cleanup after failure
 * Atomic activation after all processing succeeds
 * Incomplete document versions are never searchable
+
+This project intentionally does not use durable job infrastructure in the first version. The ingestion pipeline should still be written as a separate service/module so its execution mechanism can change later if the project scope changes.
 
 Document deletion must remove:
 
@@ -673,7 +672,7 @@ Required engineering practices:
 * Graceful dependency-failure handling
 * Timeouts around external services
 * Formatting and linting
-* Static type checking
+* Frontend TypeScript checking
 * Backend unit, integration, and workflow tests
 * Continuous integration
 * Reproducible local deployment
@@ -708,14 +707,12 @@ Recommended services:
 
 * Next.js frontend
 * FastAPI backend
-* Background worker
 * PostgreSQL with pgvector
-* Redis
-* Local or S3-compatible object storage
+* Local filesystem storage for uploaded documents
 
 Recommended supporting tools:
 
-* OpenTelemetry for tracing
+* Optional OpenTelemetry export for tracing
 * pytest for backend tests
 * GitHub Actions for continuous integration
 
@@ -732,7 +729,7 @@ Build:
 * Repository structure and local infrastructure
 * Database schema and migrations
 * PDF, Markdown, and TXT upload
-* Background ingestion pipeline
+* Synchronous ingestion pipeline
 * Canonical document model
 * Heading-aware chunking
 * Embeddings and vector index
@@ -818,7 +815,7 @@ The project is complete when:
 * Invalid-citation rate is zero
 * Abstention accuracy is at least 90% on the curated dataset
 * Quality, latency, and cost tradeoffs are reported
-* CI runs tests, linting, type checking, and evaluation regression checks
+* CI runs tests, linting, frontend TypeScript checks, and evaluation regression checks
 * The repository contains architecture diagrams, benchmark results, known limitations, and setup instructions
 * A short demonstration shows ingestion, chat, citations, abstention, retrieval debugging, and evaluation
 

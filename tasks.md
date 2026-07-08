@@ -1,319 +1,288 @@
-# Phase 1: Foundation and Vertical Slice
+# prodRAG Task Backlog
 
-## Sprint 1: Project foundation
+This backlog is intentionally scoped for a local, single-user, learning-first RAG system. The priority is to build and understand the core RAG pipeline end to end, then measure and improve it.
 
-**Goal:** Start the complete local stack and establish engineering standards.
+Out of scope for the first version:
 
-- [ ] `FND-001` Create frontend and backend project structure
-- [ ] `FND-002` Define backend module boundaries
-- [ ] `FND-003` Configure Python formatting, linting, and type checking
-- [ ] `FND-004` Configure TypeScript formatting, linting, and type checking
-- [ ] `FND-005` Create Docker Compose development stack
-- [ ] `FND-006` Configure PostgreSQL with pgvector
-- [ ] `FND-007` Configure Redis and background worker
-- [ ] `FND-008` Configure object-storage abstraction
-- [ ] `FND-009` Add environment configuration and `.env.example`
-- [ ] `FND-010` Add database migration framework
-- [ ] `FND-011` Add health and readiness endpoints
-- [ ] `FND-012` Add structured API error format
-- [ ] `FND-013` Create initial CI workflow
-- [ ] `FND-014` Document local setup and common commands
-
-**Sprint gate:** A clean checkout starts all services, passes lint and type checks, and exposes healthy frontend, API, worker, database, Redis, and storage services.
+* Durable job infrastructure
+* Kubernetes
+* Authentication and roles
+* Multi-tenancy
+* Object storage services
+* Heavy frontend testing
+* Enterprise administration features
 
 ---
 
-## Sprint 2: Document model and upload
+# Phase 1: Foundation and First Working RAG
 
-**Goal:** Accept documents safely and track their lifecycle.
+## Sprint 1: Project foundation
 
-- [ ] `ING-001` Design document, version, element, chunk, and job schemas
-- [ ] `ING-002` Create document-status state machine
-- [ ] `ING-003` Add document and processing-job migrations
+**Goal:** Create a clean local development foundation without unnecessary platform complexity.
+
+- [ ☑️ ] `FND-001` Create frontend and backend project structure
+  - **Description:** Establish the monorepo layout with separate frontend and backend folders.
+- [ ☑️ ] `FND-002` Define backend module boundaries
+  - **Description:** Document how ingestion, parsing, chunking, retrieval, generation, citations, and evaluation stay separated.
+- [ ☑️ ] `FND-003` Configure backend test tooling
+  - **Description:** Configure pytest and minimal backend project metadata so backend behavior can be tested as the RAG pipeline grows.
+- [ ☑️ ] `FND-004` Configure TypeScript linting and type checking
+  - **Description:** Add minimal frontend code-quality checks without adding frontend test frameworks.
+- [ ☑️ ] `FND-005` Create minimal Docker Compose development stack
+  - **Description:** Run only the local services needed for the app, starting with PostgreSQL and pgvector.
+- [ ☑️ ] `FND-006` Configure PostgreSQL with pgvector
+  - **Description:** Prepare the database for relational data, full-text search, and vector search.
+- [ ☑️ ] `FND-007` Add environment configuration and `.env.example`
+  - **Description:** Document required settings such as database URL, OpenAI API key, and model names.
+- [ ☑️ ] `FND-008` Add database migration framework
+  - **Description:** Add Alembic so schema changes are explicit and reproducible.
+- [ ☑️ ] `FND-009` Add basic health endpoint
+  - **Description:** Provide a simple API check for local development and troubleshooting.
+- [ ☑️ ] `FND-010` Document local setup and common commands
+  - **Description:** Make the project runnable from a clean checkout.
+
+**Sprint gate:** A clean checkout can start the frontend, backend, and PostgreSQL locally, and backend/frontend quality checks run successfully.
+
+---
+
+## Sprint 2: Document ingestion and storage
+
+**Goal:** Upload one document, validate it, store it locally, and track its processing state.
+
+- [ ] `ING-001` Design document, element, chunk, and version schemas
+  - **Description:** Model the data needed for lineage, citations, deletion, and reprocessing.
+- [ ] `ING-002` Define document status lifecycle
+  - **Description:** Use simple states such as `PROCESSING`, `READY`, `FAILED`, and `DELETING`.
+- [ ] `ING-003` Create ingestion-related migrations
+  - **Description:** Create database tables for documents, versions, elements, chunks, and processing metadata.
 - [ ] `ING-004` Implement single-file upload API
-- [ ] `ING-006` Validate extension, MIME type, size, and empty files
-- [ ] `ING-007` Sanitize uploaded filenames
-- [ ] `ING-008` Store original documents
-- [ ] `ING-009` Calculate content hashes
-- [ ] `ING-010` Detect duplicate content
-- [ ] `ING-011` Queue document-processing jobs
-- [ ] `ING-012` Implement document-list and status APIs
-- [ ] `ING-013` Build basic document upload screen
-- [ ] `ING-014` Build document status and error display
-- [ ] `ING-015` Test upload validation and duplicate handling
+  - **Description:** Accept one PDF, Markdown, or TXT file per request.
+- [ ] `ING-005` Validate file type, size, and empty files
+  - **Description:** Reject unsupported, oversized, corrupt, or empty files with clear errors.
+- [ ] `ING-006` Sanitize uploaded filenames
+  - **Description:** Store files safely without trusting user-provided names.
+- [ ] `ING-007` Store original documents on the local filesystem
+  - **Description:** Keep original files available for parsing, debugging, and reprocessing.
+- [ ] `ING-008` Calculate content hashes
+  - **Description:** Detect duplicate uploads and support idempotent processing.
+- [ ] `ING-009` Implement document-list and status APIs
+  - **Description:** Let the frontend show uploaded documents and their current state.
+- [ ] `UI-001` Build basic document upload screen
+  - **Description:** Provide a minimal UI for uploading a document and seeing validation errors.
+- [ ] `UI-002` Build document status display
+  - **Description:** Show whether a document is processing, ready, failed, or deleted.
+- [ ] `TST-001` Test upload validation and duplicate detection
+  - **Description:** Verify the important ingestion rules with deterministic backend tests.
 
-**Sprint gate:** Users can upload PDF, Markdown, and TXT files and see each document enter the processing queue exactly once.
+**Sprint gate:** Users can upload one supported document, see its status, and avoid duplicate active documents.
 
 ---
 
 ## Sprint 3: Parsing and chunking
 
-**Goal:** Convert supported documents into deterministic, traceable chunks.
+**Goal:** Convert documents into deterministic chunks with traceable lineage.
 
 - [ ] `PAR-001` Define canonical parser interface
+  - **Description:** Ensure all file types produce the same internal element model.
 - [ ] `PAR-002` Implement TXT parser
-- [ ] `PAR-003` Implement Markdown structure-aware parser
-- [ ] `PAR-004` Implement PDF structure-aware parser
-- [ ] `PAR-005` Preserve page numbers and source order
-- [ ] `PAR-006` Preserve headings, paragraphs, lists, and code blocks
-- [ ] `PAR-007` Persist canonical elements and section hierarchy
+  - **Description:** Parse plain text into ordered canonical elements.
+- [ ] `PAR-003` Implement Markdown parser
+  - **Description:** Preserve headings, paragraphs, lists, and code blocks.
+- [ ] `PAR-004` Implement basic PDF parser
+  - **Description:** Extract ordered text with page numbers where available.
+- [ ] `PAR-005` Persist canonical elements
+  - **Description:** Store parsed elements before chunking so parsing is inspectable.
 - [ ] `CHK-001` Define chunker interface and configuration
+  - **Description:** Make chunking strategies replaceable and measurable.
 - [ ] `CHK-002` Implement heading-aware chunking
-- [ ] `CHK-003` Implement small-section merging
-- [ ] `CHK-004` Implement oversized-section splitting
-- [ ] `CHK-005` Add overlap and token-limit handling
-- [ ] `CHK-006` Persist chunk lineage and adjacency
-- [ ] `CHK-007` Version parser and chunking configurations
-- [ ] `CHK-008` Test deterministic chunk output
-- [ ] `CHK-009` Test lineage, page, section, and offset preservation
+  - **Description:** Use document structure as the default chunking strategy.
+- [ ] `CHK-003` Implement fixed-token baseline chunking
+  - **Description:** Provide a simple baseline for later evaluation comparisons.
+- [ ] `CHK-004` Preserve chunk lineage
+  - **Description:** Store page, section path, source offsets where available, and previous/next chunk links.
+- [ ] `CHK-005` Add token-limit and overlap handling
+  - **Description:** Keep chunks within model limits while preserving useful context.
+- [ ] `TST-002` Test deterministic parsing and chunking
+  - **Description:** Confirm identical inputs and configs produce identical elements and chunks.
 
-**Sprint gate:** The same document and configuration always produce the same structured elements, chunks, and lineage.
+**Sprint gate:** The same document and configuration always produce the same elements, chunks, and lineage.
 
 ---
 
-## Sprint 4: Embeddings and cited answers
+## Sprint 4: Embeddings, retrieval, and cited answers
 
 **Goal:** Complete the first end-to-end RAG vertical slice.
 
 - [ ] `EMB-001` Define embedding-provider interface
-- [ ] `EMB-002` Implement initial embedding provider
+  - **Description:** Keep OpenAI-specific embedding code isolated from the rest of the pipeline.
+- [ ] `EMB-002` Implement OpenAI embedding provider
+  - **Description:** Generate embeddings through the commercial OpenAI API.
 - [ ] `EMB-003` Add batched embedding requests
-- [ ] `EMB-004` Validate token limits and vector dimensions
-- [ ] `EMB-005` Add embedding retry and rate-limit handling
-- [ ] `EMB-006` Persist embedding model and version metadata
-- [ ] `IDX-001` Index chunk vectors in pgvector
-- [ ] `IDX-002` Filter retrieval to ready documents
-- [ ] `RET-001` Implement vector similarity retrieval
-- [ ] `CTX-001` Implement basic token-budgeted context assembly
-- [ ] `CTX-002` Assign deterministic source markers
+  - **Description:** Embed chunks efficiently while keeping implementation understandable.
+- [ ] `EMB-004` Store embedding model and dimension metadata
+  - **Description:** Make embedding outputs traceable and safe to compare later.
+- [ ] `IDX-001` Store vectors in pgvector
+  - **Description:** Persist chunk vectors for similarity search.
+- [ ] `IDX-002` Add PostgreSQL full-text index
+  - **Description:** Persist searchable text for lexical retrieval.
+- [ ] `RET-001` Implement vector retrieval
+  - **Description:** Retrieve candidate chunks using vector similarity.
+- [ ] `CTX-001` Implement token-budgeted context assembly
+  - **Description:** Select retrieved chunks and assign stable source markers.
 - [ ] `GEN-001` Define generation-provider interface
-- [ ] `GEN-002` Implement grounded structured generation
-- [ ] `CIT-001` Resolve source markers server-side
-- [ ] `CIT-002` Validate citation markers against supplied context
-- [ ] `API-001` Implement streaming chat endpoint
-- [ ] `UI-001` Build minimal streaming chat screen
-- [ ] `UI-002` Build citation passage preview
-- [ ] `TST-001` Add API workflow test for upload-to-cited-answer
+  - **Description:** Isolate OpenAI generation code behind an internal interface.
+- [ ] `GEN-002` Implement grounded answer generation
+  - **Description:** Generate answers only from supplied evidence.
+- [ ] `CIT-001` Resolve citation markers server-side
+  - **Description:** Map model citation markers back to stored chunks.
+- [ ] `CIT-002` Validate citations against supplied context
+  - **Description:** Reject or repair citations that do not map to provided evidence.
+- [ ] `API-001` Implement streaming chat endpoint with SSE
+  - **Description:** Stream answer tokens/events to the frontend.
+- [ ] `UI-003` Build minimal streaming chat screen
+  - **Description:** Let users ask questions and see streamed answers.
+- [ ] `UI-004` Build citation passage preview
+  - **Description:** Let users inspect the exact evidence behind an answer.
+- [ ] `TST-003` Test upload-to-cited-answer workflow
+  - **Description:** Verify the full backend flow from document upload to cited answer.
 
-**Phase 1 gate:** A new user can start the system, upload a document, and receive a streaming answer with valid, inspectable citations.
-
----
-
-# Phase 2: Retrieval Quality
-
-## Sprint 5: Hybrid retrieval
-
-**Goal:** Add lexical retrieval and a measurable hybrid-search pipeline.
-
-- [ ] `RET-002` Implement PostgreSQL full-text indexing
-- [ ] `RET-003` Implement full-text retrieval
-- [ ] `RET-004` Implement reciprocal rank fusion
-- [ ] `RET-005` Add configurable retrieval candidate counts
-- [ ] `RET-006` Deduplicate fused results
-- [ ] `RET-007` Record source ranks, scores, and latency
-- [ ] `RET-008` Add vector-only retrieval mode
-- [ ] `RET-009` Add full-text-only retrieval mode
-- [ ] `RET-010` Add hybrid retrieval mode
-- [ ] `RET-011` Test ready-document filtering
-- [ ] `RET-012` Test deterministic rank fusion
-- [ ] `DBG-001` Expose retrieval results through debug API
-
-**Sprint gate:** The same query can run in full-text, vector, or hybrid mode, with ranks and scores available for comparison.
+**Phase 1 gate:** A user can upload one document and receive a streaming answer with valid, inspectable citations.
 
 ---
 
-## Sprint 6: Reranking and context assembly
+# Phase 2: Retrieval Quality and Transparency
 
-**Goal:** Improve evidence selection while preserving bounded latency and context size.
+## Sprint 5: Hybrid retrieval and reranking
 
+**Goal:** Improve retrieval quality with a small set of measurable techniques.
+
+- [ ] `RET-002` Implement full-text retrieval
+  - **Description:** Retrieve candidates using PostgreSQL lexical search.
+- [ ] `RET-003` Implement reciprocal rank fusion
+  - **Description:** Combine vector and lexical results into one ranked list.
+- [ ] `RET-004` Add vector-only, full-text-only, and hybrid modes
+  - **Description:** Make retrieval modes easy to compare.
+- [ ] `RET-005` Record retrieval scores and latency
+  - **Description:** Capture enough data to understand why a result was selected.
 - [ ] `RNK-001` Define reranker interface
-- [ ] `RNK-002` Implement cross-encoder reranker
-- [ ] `RNK-003` Add candidate and final-result configuration
-- [ ] `RNK-004` Record reranking scores and latency
-- [ ] `RNK-005` Add reranker timeout
-- [ ] `RNK-006` Fall back to fused order on failure
-- [ ] `CTX-003` Remove exact duplicate chunks
-- [ ] `CTX-004` Remove near-duplicate chunks
-- [ ] `CTX-005` Merge useful adjacent chunks
-- [ ] `CTX-006` Expand parent sections when useful
-- [ ] `CTX-007` Preserve source diversity
-- [ ] `CTX-008` Enforce exact context token budgets
-- [ ] `CTX-009` Store protected context snapshots
-- [ ] `TST-002` Test reranker failure fallback
-- [ ] `TST-003` Test context budget and source-marker stability
+  - **Description:** Keep reranking optional and replaceable.
+- [ ] `RNK-002` Implement OpenAI or API-based reranking approach
+  - **Description:** Improve candidate ordering without introducing local model infrastructure.
+- [ ] `RNK-003` Add reranker timeout and fallback
+  - **Description:** Fall back to fused results if reranking fails or is too slow.
+- [ ] `CTX-002` Remove duplicate selected chunks
+  - **Description:** Avoid wasting context window on repeated evidence.
+- [ ] `CTX-003` Merge useful adjacent chunks
+  - **Description:** Improve answer grounding when neighboring chunks complete the evidence.
+- [ ] `TST-004` Test retrieval modes and reranker fallback
+  - **Description:** Verify retrieval behavior and safe fallback paths.
 
-**Sprint gate:** Reranking and context assembly are bounded, traceable, and safe when the reranker is unavailable.
+**Sprint gate:** The same query can run in vector, full-text, hybrid, and reranked modes with comparable scores and timings.
 
 ---
 
-## Sprint 7: Conversations and abstention
+## Sprint 6: Conversations, abstention, and retrieval debugger
 
-**Goal:** Support reliable follow-up questions and honest non-answers.
+**Goal:** Make answers more reliable and make RAG decisions inspectable.
 
 - [ ] `CON-001` Create conversation and message schemas
-- [ ] `CON-002` Implement conversation CRUD APIs
-- [ ] `CON-003` Persist chat messages
-- [ ] `CON-004` Enforce conversation-history token limits
-- [ ] `CON-005` Implement follow-up query rewriting
-- [ ] `CON-006` Preserve original and rewritten queries
+  - **Description:** Store chat history without implementing long-term memory.
+- [ ] `CON-002` Implement conversation APIs
+  - **Description:** Create, list, read, and delete local conversations.
+- [ ] `CON-003` Implement follow-up query rewriting
+  - **Description:** Rewrite follow-up questions into standalone retrieval queries.
+- [ ] `CON-004` Preserve original and rewritten queries
+  - **Description:** Make query rewriting inspectable.
 - [ ] `ABS-001` Define insufficient-evidence response contract
+  - **Description:** Standardize how the system refuses unsupported answers.
 - [ ] `ABS-002` Add no-evidence abstention
-- [ ] `ABS-003` Add unsupported-evidence abstention
-- [ ] `ABS-004` Add conflicting-evidence handling
-- [ ] `ABS-005` Abstain on invalid citations
-- [ ] `SEC-001` Add query and output-token limits
-- [ ] `SEC-002` Add query rate limiting
-- [ ] `SEC-003` Harden prompts against document instructions
-- [ ] `UI-003` Add conversation history and deletion
-- [ ] `UI-004` Add new-conversation and stop-generation actions
-- [ ] `UI-005` Add insufficient-evidence state
-- [ ] `TST-004` Test follow-up rewriting and history limits
-- [ ] `TST-005` Test prompt-injection documents
+  - **Description:** Avoid answering when retrieval finds no useful evidence.
+- [ ] `ABS-003` Add unsupported-answer abstention
+  - **Description:** Avoid returning answers that cannot be tied to citations.
+- [ ] `DBG-001` Create request-trace data model
+  - **Description:** Store the key decisions made during retrieval and generation.
+- [ ] `DBG-002` Capture retrieval candidates and final context
+  - **Description:** Show what was retrieved, reranked, selected, and sent to the model.
+- [ ] `DBG-003` Capture model, token, cost, and latency data
+  - **Description:** Make quality, speed, and cost tradeoffs visible.
+- [ ] `DBG-004` Implement trace-detail API
+  - **Description:** Expose one trace in a structured format for the debugger UI.
+- [ ] `UI-005` Build retrieval-debugger screen
+  - **Description:** Let users inspect retrieval, context assembly, generation, and citations.
+- [ ] `TST-005` Test abstention and trace creation
+  - **Description:** Verify unsupported questions and trace persistence.
 
-**Sprint gate:** Follow-up questions resolve correctly, while unsupported or conflicting questions return a consistent abstention response.
-
----
-
-## Sprint 8: Retrieval debugger
-
-**Goal:** Make every RAG decision inspectable from the application.
-
-- [ ] `DBG-002` Create request-trace data model
-- [ ] `DBG-003` Capture original and rewritten queries
-- [ ] `DBG-004` Capture lexical and vector results
-- [ ] `DBG-005` Capture fusion and reranking results
-- [ ] `DBG-006` Capture selected chunks and final context
-- [ ] `DBG-007` Capture prompts, models, and token usage
-- [ ] `DBG-008` Capture citation mappings
-- [ ] `DBG-009` Capture stage timings and fallbacks
-- [ ] `DBG-010` Implement trace-detail API
-- [ ] `DBG-011` Build retrieval-debugger screen
-- [ ] `DBG-012` Visualize retrieval-stage progression
-- [ ] `DBG-013` Display scores, latency, tokens, and cost
-- [ ] `DBG-014` Protect context snapshots from normal logs
-- [ ] `TST-006` Test complete trace creation
-
-**Phase 2 gate:** Every retrieval and generation stage is inspectable, and full-text, vector, hybrid, and reranked results can be compared.
+**Phase 2 gate:** A user can inspect how an answer was produced and see when the system refuses to answer.
 
 ---
 
-# Phase 3: Evaluation and Experimentation
+# Phase 3: Evaluation and Experiments
 
-## Sprint 9: Evaluation foundation
+## Sprint 7: Evaluation foundation
 
-**Goal:** Create a versioned benchmark and reproducible retrieval evaluation.
+**Goal:** Build a small, versioned benchmark that measures retrieval and answer quality.
 
 - [ ] `EVAL-001` Define evaluation-example schema
-- [ ] `EVAL-002` Define dataset validation rules
-- [ ] `EVAL-003` Create licensed sample document corpus
-- [ ] `EVAL-004` Write exact-fact evaluation cases
-- [ ] `EVAL-005` Write semantic evaluation cases
-- [ ] `EVAL-006` Write multi-section and multi-document cases
-- [ ] `EVAL-007` Write follow-up evaluation cases
-- [ ] `EVAL-008` Write unanswerable and conflicting-source cases
-- [ ] `EVAL-009` Write prompt-injection cases
-- [ ] `EVAL-010` Version the initial evaluation dataset
-- [ ] `MET-001` Implement Recall@k
-- [ ] `MET-002` Implement Precision@k and hit rate
-- [ ] `MET-003` Implement MRR and NDCG@k
-- [ ] `MET-004` Record retrieval latency
+  - **Description:** Represent questions, expected evidence, expected answer notes, and answerability.
+- [ ] `EVAL-002` Create licensed sample corpus
+  - **Description:** Add documents that are safe to include in a public portfolio repo.
+- [ ] `EVAL-003` Write exact-fact evaluation cases
+  - **Description:** Test questions with clear supporting evidence.
+- [ ] `EVAL-004` Write semantic evaluation cases
+  - **Description:** Test questions where evidence uses different wording.
+- [ ] `EVAL-005` Write unanswerable evaluation cases
+  - **Description:** Test whether the system abstains correctly.
+- [ ] `MET-001` Implement Recall@k and hit rate
+  - **Description:** Measure whether retrieval finds the expected evidence.
+- [ ] `MET-002` Implement MRR
+  - **Description:** Measure how highly the expected evidence ranks.
+- [ ] `MET-003` Record latency, token usage, and estimated cost
+  - **Description:** Track practical tradeoffs alongside quality.
 - [ ] `RUN-001` Implement retrieval evaluation runner
-- [ ] `TST-007` Test metric calculations with known fixtures
+  - **Description:** Run the dataset against configured retrieval modes.
+- [ ] `RUN-002` Persist evaluation results
+  - **Description:** Save machine-readable results for later comparison.
+- [ ] `TST-006` Test metric calculations with fixtures
+  - **Description:** Verify metrics with known expected values.
 
-**Sprint gate:** A clean checkout can run a versioned dataset and reproduce retrieval metrics for every retrieval mode.
-
----
-
-## Sprint 10: Answer evaluation and experiments
-
-**Goal:** Measure answer quality and make configuration choices from evidence.
-
-- [ ] `MET-005` Implement answer-correctness evaluation
-- [ ] `MET-006` Implement faithfulness evaluation
-- [ ] `MET-007` Implement citation-correctness evaluation
-- [ ] `MET-008` Implement citation-completeness evaluation
-- [ ] `MET-009` Implement unsupported-claim measurement
-- [ ] `MET-010` Implement invalid-citation measurement
-- [ ] `MET-011` Implement abstention-accuracy measurement
-- [ ] `MET-012` Record latency, token usage, and cost
-- [ ] `RUN-002` Persist evaluation-run configuration
-- [ ] `RUN-003` Persist per-example results and failures
-- [ ] `EXP-001` Implement fixed-token baseline chunker
-- [ ] `EXP-002` Compare fixed and heading-aware chunking
-- [ ] `EXP-003` Compare lexical, vector, and hybrid retrieval
-- [ ] `EXP-004` Compare hybrid retrieval with and without reranking
-- [ ] `EXP-005` Compare selected chunk sizes
-- [ ] `EXP-006` Compare selected candidate counts
-- [ ] `REP-001` Generate machine-readable result reports
-- [ ] `REP-002` Build evaluation-results screen
-- [ ] `REP-003` Build individual-failure inspection view
-- [ ] `CI-001` Add evaluation regression checks to CI
-
-**Phase 3 gate:** Quality claims and chosen defaults are backed by reproducible quality, latency, and cost comparisons.
+**Sprint gate:** A clean checkout can run a small benchmark and reproduce retrieval metrics.
 
 ---
 
-# Phase 4: Reliability and Portfolio Polish
+## Sprint 8: Experiments and portfolio polish
 
-## Sprint 11: Reliability and observability
+**Goal:** Turn the project into a portfolio-quality demonstration with measured claims.
 
-**Goal:** Make failure, retry, deletion, and dependency behavior trustworthy.
-
-- [ ] `REL-001` Add stage-specific ingestion retries
-- [ ] `REL-002` Add maximum retry and terminal-failure handling
-- [ ] `REL-003` Add safe partial-artifact cleanup
-- [ ] `REL-004` Guarantee atomic document activation
-- [ ] `REL-005` Implement idempotent reprocessing
-- [ ] `REL-006` Implement complete document deletion
-- [ ] `REL-007` Add deletion tombstones and audit events
-- [ ] `REL-008` Detect missing embeddings
-- [ ] `REL-009` Detect stale and orphaned index entries
-- [ ] `REL-010` Add index-health reporting
-- [ ] `OBS-001` Add request and trace IDs
-- [ ] `OBS-002` Add OpenTelemetry query tracing
-- [ ] `OBS-003` Add ingestion-job tracing
-- [ ] `OBS-004` Add structured application logs
-- [ ] `OBS-005` Add external-service timeouts
-- [ ] `OBS-006` Add graceful provider-failure responses
-- [ ] `OBS-007` Redact secrets and document content from logs
-- [ ] `TST-008` Test failed-ingestion isolation
-- [ ] `TST-009` Test idempotent retries and reprocessing
-- [ ] `TST-010` Test complete deletion from all indexes
-
-**Sprint gate:** Failure injection confirms that partial documents remain hidden, retries are idempotent, and deletion removes all searchable artifacts.
-
----
-
-## Sprint 12: Portfolio release
-
-**Goal:** Produce a polished, reproducible public project.
-
-- [ ] `UI-006` Polish loading, empty, success, and error states
-- [ ] `UI-007` Polish document-management flow
-- [ ] `UI-008` Polish chat, citation, and debugger experiences
-- [ ] `UI-009` Add incorrect-citation feedback action
-- [ ] `PERF-001` Measure ingestion throughput
-- [ ] `PERF-002` Measure retrieval and generation latency
-- [ ] `PERF-003` Measure token usage and estimated cost
-- [ ] `PERF-004` Document performance bottlenecks
-- [ ] `DOC-001` Create system architecture diagram
-- [ ] `DOC-002` Create ingestion sequence diagram
-- [ ] `DOC-003` Create query sequence diagram
-- [ ] `DOC-004` Document data model and module boundaries
-- [ ] `DOC-005` Document configuration and provider setup
-- [ ] `DOC-006` Document security model and limitations
-- [ ] `DOC-007` Document chosen defaults and tradeoffs
-- [ ] `DOC-008` Publish benchmark methodology and results
-- [ ] `DOC-009` Publish known limitations and future work
-- [ ] `DOC-010` Complete clean-checkout README walkthrough
-- [ ] `TST-011` Complete backend workflow happy-path suite
-- [ ] `TST-012` Complete critical failure-path suite
-- [ ] `REL-011` Verify one-command local startup
-- [ ] `REL-012` Create tagged release
+- [ ] `EXP-001` Compare fixed-token and heading-aware chunking
+  - **Description:** Show whether structure-aware chunking improves retrieval quality.
+- [ ] `EXP-002` Compare vector, full-text, and hybrid retrieval
+  - **Description:** Show when each retrieval mode succeeds or fails.
+- [ ] `EXP-003` Compare hybrid retrieval with and without reranking
+  - **Description:** Keep reranking only if measured value justifies its cost and latency.
+- [ ] `REP-001` Generate evaluation result report
+  - **Description:** Summarize quality, latency, and cost in a readable artifact.
+- [ ] `UI-006` Build simple evaluation-results screen
+  - **Description:** Display latest benchmark results without building a full analytics product.
+- [ ] `OBS-001` Add structured JSON logs
+  - **Description:** Make local debugging easier with request IDs, stage names, durations, and errors.
+- [ ] `OBS-002` Add optional OpenTelemetry export to SigNoz
+  - **Description:** Export traces/logs when configured, while keeping the app usable without SigNoz.
+- [ ] `DOC-001` Create architecture diagram
+  - **Description:** Explain the system at a glance.
+- [ ] `DOC-002` Create ingestion and query sequence diagrams
+  - **Description:** Show the two most important runtime flows.
+- [ ] `DOC-003` Document data model and module boundaries
+  - **Description:** Make design decisions understandable to reviewers.
+- [ ] `DOC-004` Document evaluation methodology and results
+  - **Description:** Support portfolio claims with reproducible evidence.
+- [ ] `DOC-005` Complete clean-checkout README walkthrough
+  - **Description:** Ensure another developer can run the project.
 - [ ] `DEMO-001` Prepare demo dataset
+  - **Description:** Provide a reliable demo path using redistributable documents.
 - [ ] `DEMO-002` Record short demonstration video
+  - **Description:** Show ingestion, cited answers, abstention, debugger, and evaluation.
 
-**Phase 4 gate:** Another developer can clone, configure, run, test, evaluate, and understand the system without private instructions.
+**Phase 3 gate:** The project has a working RAG demo, inspectable decisions, and benchmark-backed claims.
 
 ---
 
@@ -321,9 +290,9 @@
 
 ## Functional
 
-- [ ] Upload, processing, retry, reprocessing, and deletion work
-- [ ] PDF, Markdown, and TXT parsing preserve required structure
-- [ ] Full-text, vector, hybrid, and reranked retrieval work
+- [ ] Single-file PDF, Markdown, and TXT upload works
+- [ ] Parsing and chunking preserve enough structure for citations
+- [ ] Vector, full-text, hybrid, and reranked retrieval work
 - [ ] Streaming answers contain deterministic, valid citations
 - [ ] Citation previews expose the supporting evidence
 - [ ] Follow-up questions use traceable query rewriting
@@ -333,18 +302,16 @@
 
 ## Quality
 
-- [ ] Citation correctness is at least 95% on the curated dataset
-- [ ] Invalid-citation rate is zero
-- [ ] Abstention accuracy is at least 90% on the curated dataset
-- [ ] Reranking is retained only with documented measured benefit
 - [ ] Failed and incomplete documents never appear in retrieval
 - [ ] Deleted documents never appear in subsequent retrieval
-- [ ] Critical backend unit, integration, and workflow tests pass
-- [ ] Linting, formatting, type checking, tests, and regression checks pass in CI
+- [ ] Every citation maps to evidence supplied to the model
+- [ ] Reranking is retained only with documented measured benefit
+- [ ] Backend unit, integration, and workflow tests pass
+- [ ] Formatting, linting, frontend TypeScript checks, and backend tests pass
 
 ## Portfolio
 
-- [ ] One-command startup is documented and verified
+- [ ] Clean local setup is documented and verified
 - [ ] Architecture and sequence diagrams are complete
 - [ ] Benchmark results include quality, latency, and cost
 - [ ] Engineering decisions and tradeoffs are documented
@@ -356,13 +323,11 @@
 
 # Task ID Legend
 
-
 | Prefix | Meaning | Scope |
 | --- | --- | --- |
 | `ABS` | Abstention | Insufficient-evidence and non-answer behavior |
 | `API` | Application Programming Interface | Backend endpoints and streaming API behavior |
 | `CHK` | Chunking | Chunk creation, configuration, and lineage |
-| `CI` | Continuous Integration | Automated quality and evaluation checks |
 | `CIT` | Citations | Source-marker validation and citation resolution |
 | `CON` | Conversations | Conversation storage, history, and query rewriting |
 | `CTX` | Context Assembly | Evidence selection, token budgeting, and source markers |
@@ -375,16 +340,13 @@
 | `FND` | Foundation | Project structure, infrastructure, and standards |
 | `GEN` | Generation | Grounded LLM answer generation |
 | `IDX` | Indexing | Vector and search index operations |
-| `ING` | Ingestion | Upload, validation, storage, status, and jobs |
-| `MET` | Metrics | Retrieval, answer, citation, and abstention measurements |
-| `OBS` | Observability | Tracing, structured logs, and operational visibility |
+| `ING` | Ingestion | Upload, validation, storage, status, and processing |
+| `MET` | Metrics | Retrieval, answer, citation, and cost measurements |
+| `OBS` | Observability | Structured logs, traces, and operational visibility |
 | `PAR` | Parsing | Source parsing and canonical element extraction |
-| `PERF` | Performance | Throughput, latency, token, and cost measurements |
-| `REL` | Reliability | Retry, cleanup, deletion, idempotency, and health |
 | `REP` | Reporting | Evaluation reports and result interfaces |
 | `RET` | Retrieval | Lexical, vector, hybrid, and fused search |
-| `RNK` | Reranking | Cross-encoder reranking and fallback behavior |
+| `RNK` | Reranking | Optional reranking and fallback behavior |
 | `RUN` | Evaluation Runner | Evaluation execution and result persistence |
-| `SEC` | Security | RAG-focused limits and injection protections |
-| `TST` | Testing | Backend unit, integration, workflow, regression, and failure tests |
-| `UI` | User Interface | Document, chat, citation, and debugger experiences |
+| `TST` | Testing | Backend unit, integration, workflow, and failure tests |
+| `UI` | User Interface | Document, chat, citation, debugger, and evaluation screens |

@@ -1,6 +1,6 @@
 # prodRAG
 
-An observable, evaluation-driven Retrieval-Augmented Generation system for learning and demonstrating how production-quality RAG pipelines are designed, measured, and debugged.
+An evaluation-driven Retrieval-Augmented Generation system for learning and demonstrating how high-quality RAG pipelines are designed, measured, and debugged.
 
 The project focuses on the core RAG lifecycle:
 
@@ -28,6 +28,8 @@ The project is currently in the planning and architecture stage.
 
 The feature specification defines what will be built. The sprint backlog divides that scope into implementation tasks and delivery gates.
 
+For local setup and daily commands, see [Local Development](./docs/local-development.md).
+
 ## Project goals
 
 The system is intended to demonstrate:
@@ -41,12 +43,12 @@ The system is intended to demonstrate:
 * Deterministic, validated citations
 * Honest insufficient-evidence responses
 * Reproducible RAG evaluation
-* Observable retrieval and generation pipelines
+* Inspectable retrieval and generation pipelines
 * Measured quality, latency, and cost tradeoffs
 
 The main portfolio claim is:
 
-> An observable, evaluation-driven RAG system that makes retrieval decisions inspectable and measures how chunking, hybrid search, and reranking affect answer quality.
+> An evaluation-driven RAG system that makes retrieval decisions inspectable and measures how chunking, hybrid search, and reranking affect answer quality.
 
 ## Approved technology stack
 
@@ -73,8 +75,7 @@ The main portfolio claim is:
 | Alembic | Database migrations |
 | OpenAI Python SDK | Commercial OpenAI API integration |
 | pytest | Unit and integration tests |
-| Ruff | Formatting and linting |
-| mypy | Static type checking |
+| Ruff | Python linting |
 
 ### Data and retrieval
 
@@ -247,15 +248,9 @@ API route
 → Ingestion pipeline
 ```
 
-This keeps the code testable and allows a durable queue to be added later if concurrency or reliability requirements change.
+This keeps the code testable without introducing a separate job system.
 
-The first version does not use:
-
-* Redis
-* Celery
-* Dramatiq
-* A background worker container
-* Automatic retry scheduling
+The first version does not use durable job infrastructure or automatic retry scheduling.
 
 Failed documents are marked `FAILED` with a reason. The user may explicitly retry processing. All stages must be idempotent, and incomplete documents must never become searchable.
 
@@ -458,11 +453,9 @@ OTEL_CAPTURE_CONTENT=false
 
 Real API keys must never be committed.
 
-## Planned development commands
+## Development commands
 
-The repository will expose a small set of root commands:
-
-Backend dependencies will use the standard Python workflow:
+Backend dependencies use the standard Python workflow:
 
 ```bash
 python -m venv .venv
@@ -473,21 +466,33 @@ pip install -r backend/requirements-dev.txt
 
 On Windows, activate the environment with `.venv\Scripts\activate`.
 
-Common project commands:
+Backend commands:
 
 ```bash
-make dev            # Start the local application
-make stop           # Stop local services
-make test           # Run all tests
-make test-backend   # Run backend tests
-make lint           # Run linters
-make format         # Format source code
-make typecheck      # Run static type checks
-make migrate        # Apply database migrations
-make evaluate       # Run the evaluation dataset
+cd backend
+source venv/bin/activate
+python -m pytest tests
+ruff check src tests
+uvicorn main:app --app-dir src --reload
 ```
 
-These commands are planned interfaces and will be implemented during the foundation sprint.
+Frontend commands:
+
+```bash
+cd frontend
+npm run dev
+npm run lint
+npm run typecheck
+```
+
+Database commands:
+
+```bash
+docker-compose up -d postgres
+cd backend
+source venv/bin/activate
+alembic -c migrations/alembic.ini upgrade head
+```
 
 ## Backend testing strategy
 
@@ -541,7 +546,7 @@ Frontend, backend, evaluation assets, infrastructure, and documentation remain i
 
 ### Synchronous ingestion
 
-The application is local and single-user, so a durable job queue would add more complexity than value. The ingestion pipeline is kept independent from its execution mechanism to preserve a future migration path.
+The application is local and single-user, so a separate job system would add more complexity than value. The ingestion pipeline remains isolated from API routes so it stays testable.
 
 ### PostgreSQL for both retrieval modes
 
@@ -551,9 +556,9 @@ PostgreSQL, pgvector, and PostgreSQL full-text search provide vector, lexical, a
 
 The application uses hosted OpenAI models instead of operating local model infrastructure. Provider access remains behind internal interfaces to keep the pipeline testable and configuration-driven.
 
-### OpenTelemetry and SigNoz
+### Optional OpenTelemetry and SigNoz
 
-OpenTelemetry prevents observability code from becoming vendor-specific. SigNoz provides one interface for logs, traces, metrics, exceptions, and LLM operations.
+Structured JSON logs are the default local debugging tool. OpenTelemetry export to SigNoz is optional and should not be required for the application to run.
 
 ### Explicit RAG pipeline
 
@@ -570,7 +575,7 @@ The first release does not include:
 * Department-level access control
 * Enterprise PII-governance workflows
 * Billing administration
-* Background job infrastructure
+* Separate job-processing infrastructure
 * Kubernetes
 * Agentic or multi-agent workflows
 * GraphRAG
@@ -598,7 +603,7 @@ The portfolio release is complete when:
 * Invalid-citation rate is zero.
 * Abstention accuracy reaches at least 90% on the curated dataset.
 * Quality, latency, and OpenAI API cost tradeoffs are documented.
-* CI runs formatting, linting, type checking, tests, and evaluation regression checks.
+* CI runs formatting, linting, frontend TypeScript checks, backend tests, and evaluation regression checks.
 * Architecture diagrams, benchmark results, limitations, and setup instructions are complete.
 * A short demo shows ingestion, chat, citations, abstention, retrieval debugging, evaluation, and SigNoz traces.
 

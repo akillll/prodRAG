@@ -1,0 +1,266 @@
+# ==============================================================================
+# Secrets and local environment configuration
+# ==============================================================================
+
+.env
+.env.*
+!.env.example
+*.env
+*.env.*
+!*.env.example
+
+*.pem
+*.key
+*.p12
+*.pfx
+*.crt
+*.cer
+secrets/
+.secrets/
+
+# ==============================================================================
+# Python
+# ==============================================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+/lib/
+/lib64/
+/parts/
+/sdist/
+/var/
+/wheels/
+/share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Python tooling and caches
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pytype/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+.cache/
+dmypy.json
+dmypy-*.json
+
+# Coverage and test output
+.coverage
+.coverage.*
+coverage.xml
+coverage.json
+htmlcov/
+test-results/
+junit.xml
+
+# Profiling and benchmarks
+*.prof
+*.lprof
+.benchmarks/
+
+# Notebooks
+.ipynb_checkpoints/
+
+# ==============================================================================
+# Node.js, Next.js, and frontend tooling
+# ==============================================================================
+
+node_modules/
+.pnp
+.pnp.js
+.pnp.cjs
+.pnp.loader.mjs
+
+.next/
+out/
+.vercel/
+.turbo/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Package-manager caches and logs
+.npm/
+.npm-cache/
+.pnpm-store/
+.yarn/
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Frontend coverage and browser artifacts
+coverage/
+playwright-report/
+blob-report/
+test-results/
+
+# ==============================================================================
+# Application runtime data
+# ==============================================================================
+
+data/
+backend/data/
+frontend/data/
+uploads/
+storage/
+
+# Uploaded and generated documents
+*.upload
+*.uploaded
+
+# Keep curated evaluation inputs under version control. Ignore generated output.
+evaluation/results/*
+!evaluation/results/.gitkeep
+evaluation/experiments/runs/
+evaluation/tmp/
+
+# Local exports and generated reports
+reports/generated/
+exports/
+
+# ==============================================================================
+# Databases, vector stores, and service state
+# ==============================================================================
+
+*.db
+*.db-journal
+*.sqlite
+*.sqlite3
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
+
+postgres-data/
+pgdata/
+clickhouse-data/
+signoz-data/
+minio-data/
+
+# ==============================================================================
+# Logs, traces, and telemetry
+# ==============================================================================
+
+*.log
+logs/
+log/
+traces/
+telemetry/
+otel-data/
+
+# Process and runtime files
+*.pid
+*.pid.lock
+*.seed
+*.sock
+
+# ==============================================================================
+# Docker and local infrastructure overrides
+# ==============================================================================
+
+docker-compose.override.yml
+docker-compose.override.yaml
+compose.override.yml
+compose.override.yaml
+
+# Local infrastructure state
+infra/local/
+infra/state/
+
+# ==============================================================================
+# IDEs and editors
+# ==============================================================================
+
+.idea/
+*.iml
+*.ipr
+*.iws
+
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.example.json
+
+*.code-workspace
+
+*.swp
+*.swo
+*.swn
+*.bak
+*.tmp
+*.temp
+*~
+
+# ==============================================================================
+# Operating-system files
+# ==============================================================================
+
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+Desktop.ini
+$RECYCLE.BIN/
+*.stackdump
+
+# ==============================================================================
+# Temporary and archive files
+# ==============================================================================
+
+tmp/
+temp/
+.tmp/
+
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Keep intentionally committed fixtures and sample archives when explicitly added.
+!backend/tests/fixtures/**/*.zip
+!evaluation/corpus/**/*.zip
