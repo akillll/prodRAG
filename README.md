@@ -179,7 +179,7 @@ prodRAG/
 │
 ├── docs/
 │   ├── architecture/               # System and sequence diagrams
-│   ├── adr/                        # Architecture decision records
+│   ├── architecture-decisions/     # Architecture decision records
 │   └── benchmarks/                 # Methodology and benchmark reports
 ├── scripts/                        # Development and evaluation utilities
 ├── infra/                          # Local service configuration
