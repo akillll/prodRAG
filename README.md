@@ -424,7 +424,7 @@ APP_ENV=development
 APP_LOG_LEVEL=INFO
 
 # Database
-DATABASE_URL=postgresql+psycopg://postgres:postgres@localhost:5432/prodrag
+DATABASE_URL=postgresql+psycopg:///prodrag
 
 # Document storage
 DOCUMENT_STORAGE_PATH=./data/documents

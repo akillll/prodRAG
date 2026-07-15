@@ -1,0 +1,52 @@
+prodRAG Operations Runbook
+
+Purpose
+This runbook describes local setup checks, common failure conditions, and expected operator behavior for the first release.
+
+Core assumptions
+- The application is local and single-user.
+- PostgreSQL is the primary database.
+- Uploaded documents are stored on the local filesystem.
+- Ingestion runs synchronously during the upload flow.
+
+Local startup checklist
+1. Ensure PostgreSQL is running.
+2. Confirm the configured database exists.
+3. Confirm the vector extension is available.
+4. Confirm the backend environment file has a valid DATABASE_URL.
+5. Confirm the OpenAI API key is configured before testing embedding or generation code.
+
+Health expectations
+- The health endpoint confirms that the API process is reachable.
+- The readiness endpoint confirms that the database connection succeeds.
+
+Failure handling
+- A corrupt PDF should be rejected or marked FAILED with a clear reason.
+- An empty file should never reach parsing.
+- A duplicate upload should not create duplicate active content.
+- A document that fails during parsing, chunking, embedding, or indexing must never become searchable.
+
+Retry behavior
+- Failed documents may be retried manually.
+- Retry should reuse idempotent logic where possible.
+- Retry must not leave multiple active versions of the same document content.
+
+Deletion expectations
+- Deleting a document must remove the original file.
+- Deleting a document must remove parsed elements.
+- Deleting a document must remove chunks.
+- Deleting a document must remove embeddings.
+- Deleting a document must remove full-text index entries.
+- Deleted documents must not appear in later retrieval.
+
+Debugging checklist
+1. Check the stored document status.
+2. Check the recorded failure reason.
+3. Check whether the original file exists in document storage.
+4. Check whether parsed elements were persisted.
+5. Check whether chunks were created with expected section lineage.
+6. Check whether embeddings and full-text entries were written.
+7. Confirm that only READY documents are visible to retrieval.
+
+Operational warning
+The first release does not use a background worker or durable job queue. Long uploads will hold the request open until ingestion completes or fails.

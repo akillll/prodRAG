@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     api_port: int = 8000
     log_level: str = "INFO"
 
-    database_url: str = "postgresql+psycopg://prodrag:prodrag@localhost:5432/prodrag"
+    database_url: str = "postgresql+psycopg:///prodrag"
 
     openai_api_key: str = ""
     openai_embedding_model: str = "text-embedding-3-small"

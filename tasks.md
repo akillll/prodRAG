@@ -49,11 +49,11 @@ Out of scope for the first version:
 
 **Goal:** Upload one document, validate it, store it locally, and track its processing state.
 
-- [ ] `ING-001` Design document, element, chunk, and version schemas
+- [ ☑️ ] `ING-001` Design document, element, chunk, and version schemas
   - **Description:** Model the data needed for lineage, citations, deletion, and reprocessing.
-- [ ] `ING-002` Define document status lifecycle
+- [ ☑️ ] `ING-002` Define document status lifecycle
   - **Description:** Use simple states such as `PROCESSING`, `READY`, `FAILED`, and `DELETING`.
-- [ ] `ING-003` Create ingestion-related migrations
+- [ ☑️ ] `ING-003` Create ingestion-related migrations
   - **Description:** Create database tables for documents, versions, elements, chunks, and processing metadata.
 - [ ] `ING-004` Implement single-file upload API
   - **Description:** Accept one PDF, Markdown, or TXT file per request.
