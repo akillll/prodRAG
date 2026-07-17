@@ -24,9 +24,11 @@ From the repository root:
 ```bash
 cp .env.example .env
 cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env.local
 ```
 
 Add your OpenAI API key to `.env` and `backend/.env` when model calls are implemented.
+`frontend/.env.local` defaults to the local FastAPI server at `http://127.0.0.1:8000`.
 
 ## Backend setup
 

@@ -34,6 +34,10 @@ class LocalDocumentStorage:
             with suppress(OSError):
                 path.parent.rmdir()
 
+    def exists(self, storage_path: str) -> bool:
+        path = Path(storage_path).resolve()
+        return path.is_relative_to(self._root_path) and path.is_file()
+
 
 def sanitize_filename(filename: str | None) -> str:
     """Reduce a client filename to a safe, portable basename."""

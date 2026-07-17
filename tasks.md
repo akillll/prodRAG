@@ -63,15 +63,15 @@ Out of scope for the first version:
   - **Description:** Store files safely without trusting user-provided names.
 - [ ☑️ ] `ING-007` Store original documents on the local filesystem
   - **Description:** Keep original files available for parsing, debugging, and reprocessing.
-- [ ] `ING-008` Calculate content hashes
+- [ ☑️ ] `ING-008` Calculate content hashes
   - **Description:** Detect duplicate uploads and support idempotent processing.
-- [ ] `ING-009` Implement document-list and status APIs
+- [ ☑️ ] `ING-009` Implement document-list and status APIs
   - **Description:** Let the frontend show uploaded documents and their current state.
-- [ ] `UI-001` Build basic document upload screen
+- [ ☑️ ] `UI-001` Build basic document upload screen
   - **Description:** Provide a minimal UI for uploading a document and seeing validation errors.
-- [ ] `UI-002` Build document status display
+- [ ☑️ ] `UI-002` Build document status display
   - **Description:** Show whether a document is processing, ready, failed, or deleted.
-- [ ] `TST-001` Test upload validation and duplicate detection
+- [ ☑️ ] `TST-001` Test upload validation and duplicate detection
   - **Description:** Verify the important ingestion rules with deterministic backend tests.
 
 **Sprint gate:** Users can upload one supported document, see its status, and avoid duplicate active documents.

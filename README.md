@@ -431,6 +431,7 @@ DATABASE_URL=postgresql+psycopg:///prodrag
 # Document storage
 DOCUMENT_STORAGE_PATH=./data/documents
 MAX_UPLOAD_SIZE_MB=25
+FRONTEND_ORIGIN=http://localhost:3000
 
 # OpenAI commercial API
 OPENAI_API_KEY=

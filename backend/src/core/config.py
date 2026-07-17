@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
     document_storage_path: Path = Path("./data/documents")
     max_upload_size_mb: int = 25
+    frontend_origin: str = "http://localhost:3000"
 
     otel_enabled: bool = False
     otel_exporter_otlp_endpoint: str = ""
