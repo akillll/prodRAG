@@ -21,7 +21,9 @@ This is a local, single-user portfolio project. It intentionally excludes enterp
 
 ## Project status
 
-The project is currently in the planning and architecture stage.
+The project is in Sprint 2: document ingestion and storage. The project foundation and
+ingestion schema are complete; upload validation, duplicate detection, document status
+APIs, and the first document UI are next.
 
 * [Feature specification](./Features.md)
 * [Sprint backlog](./tasks.md)
@@ -119,7 +121,7 @@ SigNoz Cloud is the initial target to avoid adding observability infrastructure 
 
 | Technology | Purpose |
 | --- | --- |
-| Docker Compose | PostgreSQL and reproducible local services |
+| Homebrew PostgreSQL 17 | Default local PostgreSQL and pgvector service |
 | npm | Frontend dependency management |
 | Makefile or justfile | Common repository commands |
 | GitHub Actions | Continuous integration |
@@ -183,7 +185,7 @@ prodRAG/
 │   └── benchmarks/                 # Methodology and benchmark reports
 ├── scripts/                        # Development and evaluation utilities
 ├── infra/                          # Local service configuration
-├── docker-compose.yml
+├── docker-compose.yml              # Optional future/container setup
 ├── .env.example
 ├── Features.md
 ├── tasks.md
@@ -485,10 +487,10 @@ npm run lint
 npm run typecheck
 ```
 
-Database commands:
+Database commands (default Homebrew setup):
 
 ```bash
-docker-compose up -d postgres
+brew services start postgresql@17
 cd backend
 source venv/bin/activate
 alembic -c migrations/alembic.ini upgrade head

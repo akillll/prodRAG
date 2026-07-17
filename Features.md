@@ -697,17 +697,17 @@ Critical integration tests:
 
 ## 26. Local deployment
 
-The complete application should start with:
+The default local development environment starts PostgreSQL with:
 
 ```bash
-docker compose up
+brew services start postgresql@17
 ```
 
-Recommended services:
+Application processes started separately during development:
 
 * Next.js frontend
 * FastAPI backend
-* PostgreSQL with pgvector
+* Homebrew PostgreSQL with pgvector
 * Local filesystem storage for uploaded documents
 
 Recommended supporting tools:

@@ -1,6 +1,7 @@
 # Local Development
 
-This project is intentionally local-first. The only required service for the current foundation sprint is PostgreSQL with pgvector.
+This project is intentionally local-first. The current work is Sprint 2: document ingestion
+and storage. PostgreSQL with pgvector is the only required service.
 
 ## Prerequisites
 

@@ -55,13 +55,13 @@ Out of scope for the first version:
   - **Description:** Use simple states such as `PROCESSING`, `READY`, `FAILED`, and `DELETING`.
 - [ ☑️ ] `ING-003` Create ingestion-related migrations
   - **Description:** Create database tables for documents, versions, elements, chunks, and processing metadata.
-- [ ] `ING-004` Implement single-file upload API
+- [ ☑️ ] `ING-004` Implement single-file upload API
   - **Description:** Accept one PDF, Markdown, or TXT file per request.
 - [ ] `ING-005` Validate file type, size, and empty files
   - **Description:** Reject unsupported, oversized, corrupt, or empty files with clear errors.
-- [ ] `ING-006` Sanitize uploaded filenames
+- [ ☑️ ] `ING-006` Sanitize uploaded filenames
   - **Description:** Store files safely without trusting user-provided names.
-- [ ] `ING-007` Store original documents on the local filesystem
+- [ ☑️ ] `ING-007` Store original documents on the local filesystem
   - **Description:** Keep original files available for parsing, debugging, and reprocessing.
 - [ ] `ING-008` Calculate content hashes
   - **Description:** Detect duplicate uploads and support idempotent processing.

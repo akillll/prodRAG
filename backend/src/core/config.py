@@ -18,6 +18,7 @@ class Settings(BaseSettings):
     openai_generation_model: str = "gpt-4.1-mini"
 
     document_storage_path: Path = Path("./data/documents")
+    max_upload_size_mb: int = 25
 
     otel_enabled: bool = False
     otel_exporter_otlp_endpoint: str = ""
